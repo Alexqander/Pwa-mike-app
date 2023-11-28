@@ -47,11 +47,50 @@ const currenceLocation = async () => {
 				toastMessage('mapa cargado').showToast();
 			});
 		}
-		const location = await getLocation();
+
+		const showMapWithLocation = () => {
+			let content = `
+			<iframe
+			width="100%"
+			height="400"
+			frameborder="0"
+			scrolling="no"
+			marginheight="0"
+			marginwidth="0"
+			src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=es&amp;q=${lat},${lng}+(Prueba)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+			>
+			</iframe>
+			`;
+			document.getElementById('modal-map').innerHTML = content;
+		};
+
 		payload.location = location;
 	} catch (error) {
 		console.log(error);
 	}
+};
+
+const initializeCamera = async () => {
+	try {
+		toastMessage('inicializando camara..').showToast();
+		const stream = await camera.init();
+		$('#modal-camera').removeClass('d-none');
+		$('#modal-camera').removeClass('d-block');
+		camera.powerOn();
+		$('#player').css('height', '400px');
+		$('#player').css('width', '100%');
+		$('#player').attr('src', URL.createObjectURL(stream));
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+const takeAPhoto = async () => {
+	try {
+		const photo = await camera.takePhoto();
+		payload = { ...payload, annexes: [photo] };
+		camera.powerOff();
+	} catch (error) {}
 };
 
 const getAllIncidencesByEmployee = async () => {
